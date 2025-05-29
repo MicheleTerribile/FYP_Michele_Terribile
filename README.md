@@ -9,23 +9,35 @@ This is the GitHub repository that houses all the code and data used for my FYP.
 
 ##  Repository Structure
 
-├── Balanced_dataset.tsv # Full dataset used for training and testing
-├── README.md # This file
-├── tezicode/ # Main project folder
-│
-├── all/ # Models trained WITH conservation scores (phyloP and phastCons)
-│ ├── LogisticRegression.ipynb
-│ ├── NeuralNetwork.ipynb
-│ ├── RandomForest.ipynb
-│ └── SVM.ipynb
-│
-└── genemirnasequence/ # Models trained WITHOUT conservation scores
-├── logisticregression.ipynb
-├── neuralnetwork.ipynb
-├── randomforest.ipynb
-└── svm.ipynb
+folder- tezicode
 
----
+file- Balanced_dataset.tsv               # The full dataset used for training and testing
+
+folder- all                               # Models trained with conservation scores (with phylop and phastcons)
+
+file contents of folder all- 
+
+LogisticRegression.ipynb
+                          
+NeuralNetwork.ipynb
+                          
+RandomForest.ipynb
+                             
+SVM.ipynb
+
+folder- genemirnasequence           # Models trained without conservation scores (without pyhlop and phastcons)
+
+file contents of folder genemirnasequence-    
+
+logisticregression.ipynb
+                                             
+neuralnetwork.ipynb
+                                            
+randomforest.ipynb
+                                             
+svm.ipynb
+
+README.md                          # This file
 
 ## 🚀 Usage
 
