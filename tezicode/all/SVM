@@ -1,0 +1,175 @@
+import pandas as pd
+import numpy as np
+import itertools
+import joblib
+import matplotlib.pyplot as plt
+import ast
+from collections import Counter
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import (roc_curve, auc, precision_recall_curve, 
+                             recall_score, precision_score, f1_score, 
+                             accuracy_score, average_precision_score)
+
+# Load dataset
+print("Loading dataset...")
+df = pd.read_csv("/Users/micheleterribile/Desktop/everything tezi/tezicode/Balanced_dataset.tsv", sep='\t')
+print("Dataset loaded successfully.")
+
+# Generate all possible k-mers of k=4 for gene
+genepossible_kmers = [''.join(p) for p in itertools.product('ACGT', repeat=4)]
+genekmer_dict = {kmer: idx for idx, kmer in enumerate(genepossible_kmers)}  # Map k-mer to index
+
+# Convert gene sequences into k-mer presence vectors
+def gene_kmer_vectorization(sequences, k=4):
+    vectorized = np.zeros((len(sequences), len(genekmer_dict)))
+    gene_kmer_counts_global = Counter()
+    
+    for i, seq in enumerate(sequences):
+        genekmer_counts = Counter([''.join(seq[j:j+k]) for j in range(len(seq) - k + 1)])
+        gene_kmer_counts_global.update(genekmer_counts)
+        for kmer, count in genekmer_counts.items():
+            if kmer in genekmer_dict:
+                vectorized[i, genekmer_dict[kmer]] = count
+
+    return vectorized, gene_kmer_counts_global
+
+# Generate all possible k-mers of k=4 for rna
+rnapossible_kmers = [''.join(p) for p in itertools.product('ACGT', repeat=4)]
+rnakmer_dict = {kmer: idx for idx, kmer in enumerate(rnapossible_kmers)}  # Map k-mer to index
+
+# Convert RNA sequences into k-mer presence vectors
+def rna_kmer_vectorization(sequences, k=4):
+    vectorized = np.zeros((len(sequences), len(rnakmer_dict)))
+    rna_kmer_counts_global = Counter()
+    
+    for i, seq in enumerate(sequences):
+        rnakmer_counts = Counter([''.join(seq[j:j+k]) for j in range(len(seq) - k + 1)])
+        rna_kmer_counts_global.update(rnakmer_counts)
+        for kmer, count in rnakmer_counts.items():
+            if kmer in rnakmer_dict:
+                vectorized[i, rnakmer_dict[kmer]] = count
+
+    return vectorized, rna_kmer_counts_global
+
+# Apply separate k-mers processing to 'gene' and 'noncodingRNA'
+k = 4
+gene_kmers, gene_kmer_counts = gene_kmer_vectorization(df['gene'].astype(str), k)
+rna_kmers, rna_kmer_counts = rna_kmer_vectorization(df['noncodingRNA'].astype(str), k)
+
+# Print all k-mer frequencies in alphabetical order
+print("\nGene K-mer Frequency Counts (Alphabetical Order):")
+for kmer in sorted(genekmer_dict.keys()):  # Sort k-mers alphabetically
+    print(f"{kmer}: {gene_kmer_counts[kmer]}")
+
+# Print all k-mer frequencies in alphabetical order
+print("\nRNA K-mer Frequency Counts (Alphabetical Order):")
+for kmer in sorted(rnakmer_dict.keys()):  # Sort k-mers alphabetically
+    print(f"{kmer}: {rna_kmer_counts[kmer]}")
+
+
+# Extract numerical features safely
+def extract_mean_conservation(values):
+    try:
+        return np.mean(ast.literal_eval(values))
+    except (ValueError, SyntaxError):
+        return np.nan
+
+df['gene_phyloP'] = df['gene_phyloP'].apply(extract_mean_conservation)
+df['gene_phastCons'] = df['gene_phastCons'].apply(extract_mean_conservation)
+
+# Convert to numpy arrays
+gene_phyloP = df['gene_phyloP'].values.reshape(-1, 1)
+gene_phastCons = df['gene_phastCons'].values.reshape(-1, 1)
+
+# Check for missing values
+if np.isnan(gene_phyloP).sum() > 0 or np.isnan(gene_phastCons).sum() > 0:
+    print("Warning: Missing values detected in phyloP or phastCons!")
+    df = df.dropna(subset=['gene_phyloP', 'gene_phastCons'])  # Drop rows with NaN values
+    gene_phyloP = df['gene_phyloP'].values.reshape(-1, 1)
+    gene_phastCons = df['gene_phastCons'].values.reshape(-1, 1)
+
+# Combine all features
+X = np.hstack((gene_kmers, rna_kmers, gene_phyloP, gene_phastCons))
+y = df['label'].values
+
+# Standardise features (important for SVM)
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+# Print dataset shape details
+print(f"Gene k-mers shape: {gene_kmers.shape}")
+print(f"ncRNA k-mers shape: {rna_kmers.shape}")
+print(f"Gene phyloP shape: {gene_phyloP.shape}")
+print(f"Gene phastCons shape: {gene_phastCons.shape}")
+print(f"Final X shape: {X.shape}")
+print("First row of X (first 10 features):", X[0, :10])  
+print("Last two columns (phyloP & phastCons):", X[0, -2:])  
+print("Column-wise mean of X:", np.mean(X, axis=0)[-5:])  
+print("First 10 labels:", y[:10])
+print("Unique labels:", np.unique(y))
+
+# Split dataset
+print("Splitting dataset into training (80%) and testing (20%)...")
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+print("Dataset split completed.")
+
+# Train SVM with cross-validation
+print("Training SVM model...")
+svm = SVC(kernel='rbf', C=1.0, probability=True, random_state=42)
+scores = cross_val_score(svm, X_train, y_train, cv=5)
+print("Training Performance:")
+print(f"Accuracy: {np.mean(scores):.4f} ± {np.std(scores):.4f}")
+svm.fit(X_train, y_train)
+print("Model training completed.")
+
+# Save the model
+joblib.dump(svm, "svm_model.pkl")
+print("Model saved successfully.")
+
+# Load the saved model
+print("Loading saved model")
+rf_loaded = joblib.load("svm_model.pkl")
+
+# Evaluate model
+print("Running model on test data...")
+y_pred = rf_loaded.predict(X_test)
+y_prob = rf_loaded.predict_proba(X_test)[:, 1]
+
+# Calculate performance metrics
+accuracy = accuracy_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+pr_auc = average_precision_score(y_test, y_prob)  # PR-AUC calculation
+
+print("Test Performance:")
+print(f"Accuracy: {accuracy:.4f}")
+print(f"Recall: {recall:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"F1 Score: {f1:.4f}")
+print(f"PR-AUC: {pr_auc:.4f}")
+print(y_train)
+# ROC Curve
+fpr, tpr, _ = roc_curve(y_test, y_prob)
+roc_auc = auc(fpr, tpr)
+plt.figure()
+plt.plot(fpr, tpr, label=f'ROC curve (area = {roc_auc:.2f})', color='blue')
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("Receiver Operating Characteristic (ROC) Curve")
+plt.legend()
+plt.grid()
+plt.show()
+
+# Precision-Recall Curve
+precision_vals, recall_vals, _ = precision_recall_curve(y_test, y_prob)
+plt.figure()
+plt.plot(recall_vals, precision_vals, label="Precision-Recall Curve", color='red')
+plt.xlabel("Recall")
+plt.ylabel("Precision")
+plt.title("Precision-Recall Curve")
+plt.legend()
+plt.grid()
+plt.show()
