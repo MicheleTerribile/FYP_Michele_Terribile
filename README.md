@@ -39,11 +39,11 @@ svm.ipynb
 
 README.md                          # This file
 
-## 🚀 Usage
+##  Usage
 
 All scripts are Jupyter Notebooks and can be run in **Visual Studio Code** using the "Run Python File" button or in **Jupyter Notebook**.
 
-### ▶️ To run the Random Forest model **with conservation scores**:
+###  To run the Random Forest model **with conservation scores**:
 
 1. Open `all/RandomForest.ipynb` in VS Code or Jupyter.
 2. Click the **"Run All"** button or run each cell sequentially.
@@ -52,7 +52,7 @@ All scripts are Jupyter Notebooks and can be run in **Visual Studio Code** using
    - Once closed, displays the **Precision-Recall curve**.
 4. When both graphs are closed, the **script has finished executing**.
 
-### ▶️ To run the Neural Network model **without conservation scores**:
+###  To run the Neural Network model **without conservation scores**:
 
 1. Open `genemirnasequence/neuralnetwork.ipynb`.
 2. Click the **"Run All"** button or run each cell sequentially.
@@ -64,7 +64,7 @@ All scripts are Jupyter Notebooks and can be run in **Visual Studio Code** using
 
 ---
 
-## 📤 Terminal Output Overview
+##  Terminal Output Overview
 
 Each script prints the following during execution:
 
