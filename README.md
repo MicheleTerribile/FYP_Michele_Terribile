@@ -14,11 +14,11 @@ file contents of folder all-
 
 LogisticRegression.ipynb
                           
-                          NeuralNetwork.ipynb
+NeuralNetwork.ipynb
                           
-                             RandomForest.ipynb
+RandomForest.ipynb
                              
-                             SVM.ipynb
+SVM.ipynb
 
 folder- genemirnasequence           # Models trained without conservation scores (without pyhlop and phastcons)
 
@@ -26,11 +26,11 @@ file contents of folder genemirnasequence-
 
 logisticregression.ipynb
                                              
-                                              neuralnetwork.ipynb
+neuralnetwork.ipynb
                                             
-                                            randomforest.ipynb
+randomforest.ipynb
                                              
-                                              svm.ipynb
+svm.ipynb
 
 README.md                          # This file
 
