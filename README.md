@@ -3,23 +3,23 @@ Michele Terribile FYP2025.
 
 This is the Github Repository that houses all the codes used for my FYP.
 
-tezicode
-│
-├── Balanced_dataset.tsv               # The full dataset used for training and testing
-│
-├── all/                               # Models trained with conservation scores (with phylop and phastcons)
-│   ├── LogisticRegression.ipynb
-│   ├── NeuralNetwork.ipynb
-│   ├── RandomForest.ipynb
-│   └── SVM.ipynb
-│
-├── genemirnasequence/                 # Models trained without conservation scores (without pyhlop and phastcons)
-│   ├── logisticregression.ipynb
-│   ├── neuralnetwork.ipynb
-│   ├── randomforest.ipynb
-│   └── svm.ipynb
-│
-└── README.md                          # This file
+folder- tezicode
+
+file- Balanced_dataset.tsv               # The full dataset used for training and testing
+
+folder- all                               # Models trained with conservation scores (with phylop and phastcons)
+file contents of folder all- LogisticRegression.ipynb
+                             NeuralNetwork.ipynb
+                             RandomForest.ipynb
+                             SVM.ipynb
+
+folder- genemirnasequence           # Models trained without conservation scores (without pyhlop and phastcons)
+file contents of folder genemirnasequence-    logisticregression.ipynb
+                                              neuralnetwork.ipynb
+                                              randomforest.ipynb
+                                              svm.ipynb
+
+README.md                          # This file
 
 Usage:
 
