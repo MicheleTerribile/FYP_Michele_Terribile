@@ -1,82 +1,81 @@
-Benchmarking Evolutionary Conservation Features for microRNA Target Site Classification
+# Benchmarking Evolutionary Conservation Features for microRNA Target Site Classification
 
-Michele Terribile FYP2025.
+**Author:** Michele Terribile  
+**Project:** Final Year Project 2025
 
-This is the Github Repository that houses all the codes used for my FYP.
+This is the GitHub repository that houses all the code and data used for my FYP.
 
-folder- tezicode
+---
 
-file- Balanced_dataset.tsv               # The full dataset used for training and testing
+##  Repository Structure
 
-folder- all                               # Models trained with conservation scores (with phylop and phastcons)
+├── Balanced_dataset.tsv # Full dataset used for training and testing
+├── README.md # This file
+├── tezicode/ # Main project folder
+│
+├── all/ # Models trained WITH conservation scores (phyloP and phastCons)
+│ ├── LogisticRegression.ipynb
+│ ├── NeuralNetwork.ipynb
+│ ├── RandomForest.ipynb
+│ └── SVM.ipynb
+│
+└── genemirnasequence/ # Models trained WITHOUT conservation scores
+├── logisticregression.ipynb
+├── neuralnetwork.ipynb
+├── randomforest.ipynb
+└── svm.ipynb
 
-file contents of folder all- 
+---
 
-LogisticRegression.ipynb
-                          
-NeuralNetwork.ipynb
-                          
-RandomForest.ipynb
-                             
-SVM.ipynb
+## 🚀 Usage
 
-folder- genemirnasequence           # Models trained without conservation scores (without pyhlop and phastcons)
+All scripts are Jupyter Notebooks and can be run in **Visual Studio Code** using the "Run Python File" button or in **Jupyter Notebook**.
 
-file contents of folder genemirnasequence-    
+### ▶️ To run the Random Forest model **with conservation scores**:
 
-logisticregression.ipynb
-                                             
-neuralnetwork.ipynb
-                                            
-randomforest.ipynb
-                                             
-svm.ipynb
+1. Open `all/RandomForest.ipynb` in VS Code or Jupyter.
+2. Click the **"Run All"** button or run each cell sequentially.
+3. After training, the script:
+   - Displays the **ROC-AUC curve** in a new window.
+   - Once closed, displays the **Precision-Recall curve**.
+4. When both graphs are closed, the **script has finished executing**.
 
-README.md                          # This file
+### ▶️ To run the Neural Network model **without conservation scores**:
 
-Usage:
+1. Open `genemirnasequence/neuralnetwork.ipynb`.
+2. Click the **"Run All"** button or run each cell sequentially.
 
-All scripts are standard Python files and can be run directly in **Visual Studio Code** using the "Run Python File" button at the top right of the editor.
+> ⚠️ **Important:**  
+> Ensure the path to `Balanced_dataset.tsv` is correct in your script.  
+> If you encounter a "file not found" error, update the relative or absolute path accordingly.  
+> SVM models may take longer to execute — please wait for them to finish.
 
+---
 
+## 📤 Terminal Output Overview
 
-To run the Random Forest model **with conservation scores**:
+Each script prints the following during execution:
 
-1. Open `all/RandomForest.py` in VS Code.
-2. Click the **"Run Python File"** button (arrow/triangle) in the top right corner.
-3. Once it is done, a python file is generated and popped up displaying the ROC-AUC curve graph.
-4. When you close the ROC-AUC graph, another python file pops up with the Precion-Recall graph.
-5. Once that is closed, the terminal has finished executing and is ready to be ran again.
+- Frequencies of all **256 possible 4-mers** for gene and ncRNA sequences.
+- Shapes of:
+  - Gene k-mers
+  - ncRNA k-mers
+  - `phyloP` scores
+  - `phastCons` scores
+  - Combined feature matrix `X`
+- Previews:
+  - First 10 values of the feature matrix
+  - Last two conservation features
+  - Column-wise means
+  - First 10 labels and all unique classes
+- Splits the dataset (80% training, 20% testing)
+- Trains the model and performs cross-validation
+- Saves and reloads the model
+- Evaluates the model on test data
+- Displays:
+  - **ROC-AUC graph**
+  - **Precision-Recall graph**
 
-To run the Neural Network **without conservation scores**:
+Once both graphs are closed, the terminal is ready for a new run.
 
-1. Open `genemirnasequence/neuralnetwork.py` in VS Code.
-2. Click the **"Run Python File"** button.
-
-> ⚠️ **Important:** Make sure the path to the dataset (`Balanced_dataset.tsv`) is correct in your script.  
-> If you get a "file not found" error, adjust the relative or absolute path accordingly based on where you're running the script from.
-> Running time may vary, with SVM models typically taking longer. Please be patient and wait until the program completes execution.
-
-Terminal Output Description:
-The terminal prints a detailed count of all 256 possible 4-mer frequencies for both gene and ncRNA sequences.
-
-Prints the shape of:
-Gene k-mers
-ncRNA k-mers
-phyloP scores
-phastCons scores
-Final feature matrix X (combined)
-
-Displays:
-First 10 values of the feature matrix
-Last two conservation features
-Column-wise means
-First 10 labels and unique classes
-
-Splits the dataset (80% training, 20% testing).
-
-Trains the model and shows cross-validation performance
-
-Saves and reloads the model, evaluates on test data
-
-Terminal outputs metrics and 2 phyton files are generated thisplaying the ROC-AUC graph and the Precision Recall graph.
+---
